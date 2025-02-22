@@ -22,11 +22,11 @@ Or include via a `<script>` tag:
 
 
 ```html
-<script src="../dist/tagit.min.js"></script>
+<script src="../dist/tagIt.min.js"></script>
 ```
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/deepansumor/TagItJS@latest/dist/tagit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/deepansumor/TagItJS@latest/dist/tagIt.min.js"></script>
 ```
 
 
