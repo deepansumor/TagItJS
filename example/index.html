@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TagIt.js Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .editor-container, .textarea-container {
+      margin-bottom: 40px;
+    }
+    #editor {
+      border: 1px solid #ccc;
+      padding: 10px;
+      min-height: 150px;
+      background: #fff;
+    }
+    #textarea {
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      background: #fff;
+    }
+    /* Dropdown styling */
+    .tagit-dropdown {
+      font-family: inherit;
+      font-size: 14px;
+      border-radius: 3px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .tagit-dropdown li {
+      list-style: none;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+    .tagit-dropdown li:hover {
+      background: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TagIt.js Demo</h1>
+
+    <div class="editor-container">
+      <h2>ContentEditable Editor</h2>
+      <div id="editor" contenteditable="true">Type '#' here...</div>
+    </div>
+
+    <div class="textarea-container">
+      <h2>Textarea Input</h2>
+      <textarea id="textarea" placeholder="Type '#' here..."></textarea>
+    </div>
+  </div>
+
+  <!-- Include the bundled TagIt.js library -->
+  <script src="../dist/tagIt.js"></script>
+  <script>
+    // Convert suggestion strings into suggestion objects.
+    var suggestions = ['Alice', 'Bob', 'Charlie', 'David', 'Eve'].map(function(s) {
+      return { display: s, key: s };
+    });
+
+    // Fake async fetch function simulating a 500ms delay.
+    function fakeFetchSuggestions() {
+      return new Promise(function(resolve) {
+        setTimeout(function() {
+          resolve([
+            { display: 'Alice', key: 'Alice' },
+            { display: 'Bob', key: 'Bob' },
+            { display: 'Charlie', key: 'Charlie' },
+            { display: 'David', key: 'David' },
+            { display: 'Eve', key: 'Eve' },
+            { display: 'Mallory', key: 'Mallory' }
+          ]);
+        }, 500);
+      });
+    }
+
+    // Initialize TagIt for the contentEditable element.
+    var editor = document.getElementById('editor');
+    if (editor) {
+      var tagItInstance = new TagIt(editor, {
+        suggestions: suggestions,
+        keepTrigger: true,
+        triggerChar: "#",
+        maxSuggestions: 5,
+        minScore: 0.5,
+        debounceTime: 300,
+        fetchSuggestions: fakeFetchSuggestions
+      });
+
+      // Apply middleware: filter out suggestions with key length <= 3.
+      tagItInstance.use(function(suggestions) {
+        return suggestions.filter(function(item) {
+          return item.key.length > 3;
+        });
+      });
+
+      // Real-time example: add a suggestion after 3 seconds.
+      setTimeout(function() {
+        tagItInstance.addSuggestion({ display: 'Zoe', key: 'Zoe' });
+        console.log("Added suggestion: Zoe");
+      }, 3000);
+
+      // Real-time example: remove a suggestion after 6 seconds.
+      setTimeout(function() {
+        tagItInstance.removeSuggestion('Bob');
+        console.log("Removed suggestion: Bob");
+      }, 6000);
+    }
+
+    // Initialize TagIt for the textarea.
+    var textarea = document.getElementById('textarea');
+    if (textarea) {
+      new TagIt(textarea, {
+        suggestions: suggestions,
+        maxSuggestions: 5,
+        debounceTime: 300,
+        fetchSuggestions: fakeFetchSuggestions
+      });
+    }
+  </script>
+</body>
+</html>
